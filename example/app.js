@@ -1,3 +1,3 @@
-import Button from '../components/button/Button';
+import Button from '../components/Button/Button';
 
-document.body.appendChild(new Button());
+Button.registerComponent();

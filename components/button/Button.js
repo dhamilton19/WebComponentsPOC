@@ -3,8 +3,17 @@ import styles from "./styles.css";
 
 import Component from '../Component';
 
-export default () => {
+export default class Button extends Component {
 
-    return Component(styles, template, 'x-button');
+    static tag = 'x-button';
+    static styles = styles;
+    static template = template;
+    static attributes = ["bar"];
+
+    static setAttributes() {
+        this.proto.setBar = function(value){
+            console.log(value);
+        }
+    }
 
 }

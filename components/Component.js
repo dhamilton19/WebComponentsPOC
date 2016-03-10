@@ -1,24 +1,53 @@
-export default (styles, template, tag) => {
-    const component = Object.create(HTMLElement.prototype);
+import capitalise from '../utils/capitalise';
 
-    component.createdCallback = function() {
-        const rootNode = this.createShadowRoot();
+export default class Component {
 
-        const containerNode = document.createElement('div');
-        containerNode.innerHTML = template;
+    static component = null;
+    static proto = null;
+    static tag = null;
+    static styles = null;
+    static template = null;
+    static attributes = null;
 
-        const styleNode = document.createElement('style');
-        styleNode.innerHTML = styles.toString();
+    static registerComponent() {
+        if(this.component){
+            throw Error('Component already created');
+        }
 
-        const clonedNode = document.importNode(containerNode, true);
+        this.proto = Object.create(HTMLElement.prototype);
 
-        rootNode.appendChild(styleNode);
-        rootNode.appendChild(clonedNode);
-    };
+        const styles = this.styles, template = this.template, attributes = this.attributes;
 
-    const Element = document.registerElement(tag, {
-        prototype: component
-    });
+        this.proto.createdCallback = function(){
+            const rootNode = this.createShadowRoot();
 
-    return new Element();
+            const containerNode = document.createElement('div');
+            containerNode.innerHTML = template;
+
+            const styleNode = document.createElement('style');
+            styleNode.innerHTML = styles.toString();
+
+            const clonedNode = document.importNode(containerNode, true);
+
+            for(let attribute of attributes){
+                if (this.hasAttribute(attribute)
+                    && typeof this['set' + capitalise(attribute)] ==='function') {
+                    this['set' + capitalise(attribute)](this.getAttribute(attribute));
+                }
+            }
+
+            rootNode.appendChild(styleNode);
+            rootNode.appendChild(clonedNode);
+        };
+
+        this.setAttributes();
+
+        this.component = document.registerElement(this.tag, {
+            prototype: this.proto
+        });
+
+    }
+
+
+    static setAttributes() {}
 }
