@@ -7,7 +7,6 @@ export default class Component {
     static tag = null;
     static styles = null;
     static template = null;
-    static attributes = null;
 
     static registerComponent() {
         if(this.component){
@@ -16,7 +15,7 @@ export default class Component {
 
         this.proto = Object.create(HTMLElement.prototype);
 
-        const styles = this.styles, template = this.template, attributes = this.attributes;
+        const styles = this.styles, template = this.template;
 
         this.proto.createdCallback = function(){
             const rootNode = this.createShadowRoot();
@@ -29,12 +28,12 @@ export default class Component {
 
             const clonedNode = document.importNode(containerNode, true);
 
-            for(let attribute of attributes){
-                if (this.hasAttribute(attribute)
-                    && typeof this['set' + capitalise(attribute)] ==='function') {
-                    this['set' + capitalise(attribute)](this.getAttribute(attribute));
+            Array.prototype.slice.call(this.attributes).forEach((attribute) => {
+                const func = this['set' + capitalise(attribute.name)];
+                if (typeof func ==='function') {
+                    func(attribute.value);
                 }
-            }
+            });
 
             rootNode.appendChild(styleNode);
             rootNode.appendChild(clonedNode);
@@ -47,7 +46,6 @@ export default class Component {
         });
 
     }
-
 
     static setAttributes() {}
 }

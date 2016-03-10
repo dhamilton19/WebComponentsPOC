@@ -8,7 +8,6 @@ export default class Button extends Component {
     static tag = 'x-button';
     static styles = styles;
     static template = template;
-    static attributes = ["bar"];
 
     static setAttributes() {
         this.proto.setBar = function(value){
